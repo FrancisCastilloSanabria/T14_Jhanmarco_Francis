@@ -95,42 +95,269 @@ html, body {
   animation: move 2s infinite;
 }
 </style>
-<body>
+<body class="bg-secondary">
 
 
-	<nav class="navbar navbar-expand-md bg-dark navbar-dark">
-		<a class="navbar-brand" href="#"> Control de estudiantes</a>
-		<!-- Navbar links -->
-		<div class="collapse navbar-collapse" id="collapsibleNavbar">
-			<ul class="navbar-nav">
-				<li class="nav-item"><a class="nav-link"
-					th:href="@{/estudiantes}">Estudiantes</a></li>
-			</ul>
+	<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+		<div class="container-fluid">
+			<span id="currentDateTime" class="nav-link text-white"> <span
+				id="currentTime" style="font-size: 34px;"></span> - <span
+				id="currentDate"></span>
+			</span>
+			<button class="navbar-toggler" type="button"
+				data-bs-toggle="collapse" data-bs-target="#navbarNav"
+				aria-controls="navbarNav" aria-expanded="false"
+				aria-label="Toggle navigation">
+				<span class="navbar-toggler-icon"></span>
+			</button>
+			<div class="collapse navbar-collapse justify-content-end"
+				id="navbarNav">
+				<ul class="navbar-nav">
+					<li class="nav-item"><a class="nav-link"
+						th:href="@{/estudiantes}">Estudiantes</a></li>
+					<li class="nav-item dropdown"><a
+						class="nav-link dropdown-toggle text-white" href="#"
+						id="logoutDropdown" role="button" data-bs-toggle="dropdown"
+						aria-expanded="false"> Cerrar sesión </a>
+						<ul class="dropdown-menu dropdown-menu-end"
+							aria-labelledby="logoutDropdown">
+							<li>
+								<div class="d-flex flex-column align-items-center p-3">
+									<img src="img\iconoUSUARIO.png" alt="Logo CASSIATEC"
+										class="logo-img" style="height: 6rem"><span
+										class="align-self-center">Auxiliar</span>
+									<button class="btn btn-danger mt-2" data-bs-toggle="modal"
+										data-bs-target="#confirmLogoutModal">Cerrar sesión</button>
+								</div>
+							</li>
+						</ul></li>
+				</ul>
+			</div>
 		</div>
 	</nav>
+	<script>
+		// Obtener el elemento para mostrar la hora y fecha y actualizarlo cada segundo
+		var currentDateTimeElement = document.getElementById("currentDateTime");
+
+		// Función para obtener la hora actual en formato HH:MM:SS
+		function getCurrentTime() {
+			var currentDate = new Date();
+			var hours = currentDate.getHours().toString().padStart(2, "0");
+			var minutes = currentDate.getMinutes().toString().padStart(2, "0");
+			var seconds = currentDate.getSeconds().toString().padStart(2, "0");
+			return hours + ":" + minutes + ":" + seconds;
+		}
+
+		// Función para obtener la fecha actual en formato DD/MM/YYYY
+		function getCurrentDate() {
+			var currentDate = new Date();
+			var days = [ 'Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves',
+					'Viernes', 'Sábado' ];
+			var day = days[currentDate.getDay()];
+			var date = currentDate.getDate().toString().padStart(2, "0");
+			var months = [ 'enero', 'febrero', 'marzo', 'abril', 'mayo',
+					'junio', 'julio', 'agosto', 'septiembre', 'octubre',
+					'noviembre', 'diciembre' ];
+			var month = months[currentDate.getMonth()];
+			var year = currentDate.getFullYear().toString();
+			return day + ' ' + date + ' de ' + month + ' de ' + year;
+		}
+
+		// Actualizar la hora y fecha cada segundo
+		function updateCurrentDateTime() {
+			var currentTime = getCurrentTime();
+			var currentDate = getCurrentDate();
+			currentDateTimeElement.textContent = currentTime + " - "
+					+ currentDate;
+		}
+
+		// Actualizar la hora y fecha inicial y luego cada segundo
+		updateCurrentDateTime();
+		setInterval(updateCurrentDateTime, 1000);
+
+		function updateCurrentDateTime() {
+			var currentTimeElement = document.getElementById("currentTime");
+			var currentDateElement = document.getElementById("currentDate");
+
+			var currentTime = getCurrentTime();
+			var currentDate = getCurrentDate();
+
+			currentTimeElement.textContent = currentTime;
+			currentDateElement.textContent = currentDate;
+		}
+	</script>
 
     <br>
     <div class="container">
        <div class="row">
-          <div class="col-lg-6 col-md-6 col-sm-6 container justify-content-center card">
+          <div class="col-lg-6 col-md-6 col-sm-6 container justify-content-center card bg-info">
               <h1 class="text-center">Registro de un estudiante</h1>
               <div class="card-body">
                  <form th:action="@{/estudiantes}" th:object="${estudiante}" method="POST">
                     <div class="form-group">
-                       <label>Nombre : </label>
-                       <input type="text" name="nombre" th:field="*{nombre}" class="form-control" placeholder="Nombre del estudiante: ">
+<!--                        <label>Nombre : </label> -->
+<!--                        <input type="text" name="nombre" th:field="*{nombre}" class="form-control" placeholder="Nombre del estudiante: "> -->
+
+<label for="txtNames">NOMBRE:</label> <input type="text"
+												class="form-control" name="txtNames" id="txtNames"
+												placeholder="Escribe sus nombre"
+												pattern="[A-Za-zñÑáéíóúÁÉÍÓÚ\s]+" required>
+											<div id="namesNotice" class="input-notice"></div>
+											<script>
+											// Obtener el elemento input y el elemento de aviso
+											var input = document
+													.getElementById("txtNames");
+											var namesNotice = document
+													.getElementById("namesNotice");
+
+											// Agregar un listener al evento input del input
+											input
+													.addEventListener(
+															"input",
+															function() {
+																// Obtener el valor actual del input
+																var inputValue = this.value;
+
+																// Aplicar la validación para permitir solo letras del alfabeto español latino y espacios
+																var validatedValue = inputValue
+																		.replace(
+																				/[^A-Za-zñÑáéíóúÁÉÍÓÚ\s]/g,
+																				'');
+
+																// Capitalizar cada palabra
+																var capitalizedValue = validatedValue
+																		.replace(
+																				/\b\w/g,
+																				function(
+																						match) {
+																					return match
+																							.toUpperCase();
+																				});
+
+																// Actualizar el valor del input con el resultado capitalizado
+																this.value = capitalizedValue;
+
+																// Aplicar el estilo de borde verde de 3 píxeles si el valor es válido y tiene al menos un carácter
+																if (capitalizedValue === inputValue
+																		&& capitalizedValue.length > 0) {
+																	this.classList
+																			.add('border-success');
+																	this.style.borderWidth = '3px';
+																} else {
+																	this.classList
+																			.remove('border-success');
+																	this.style.borderWidth = '';
+																}
+															});
+
+											// Agregar un listener al evento focus del input
+											input
+													.addEventListener(
+															"focus",
+															function() {
+																// Mostrar el aviso al costado del input cuando se enfoca en él
+																namesNotice.style.display = "block";
+																namesNotice.textContent = "ALERTA: Solo puedes colocar letras";
+															});
+
+											// Agregar un listener al evento blur del input
+											input
+													.addEventListener(
+															"blur",
+															function() {
+																// Ocultar el aviso cuando se pierde el enfoque del input
+																namesNotice.style.display = "none";
+																namesNotice.textContent = "";
+															});
+										</script>
+											
                     </div>
                     
                     <div class="form-group">
-                       <label>Apellido : </label>
-                       <input type="text" name="apellido" th:field="*{apellido}" class="form-control" placeholder="Apellido del estudiante: ">
+<!--                        <label>Apellido : </label> -->
+<!--                        <input type="text" name="apellido" th:field="*{apellido}" class="form-control" placeholder="Apellido del estudiante: "> -->
+<label for="txtLast_names">APELLIDO:</label> <input
+												type="text" class="form-control" name="txtLast_names"
+												id="txtLast_names" placeholder="Escribe tus apellidos" required>
+											<div id="lastNamesNotice" class="input-notice"></div>
+<script>
+											// Obtener el elemento input y el elemento de aviso
+											var input = document
+													.getElementById("txtLast_names");
+											var lastNamesNotice = document
+													.getElementById("lastNamesNotice");
+
+											// Agregar un listener al evento input del input
+											input
+													.addEventListener(
+															"input",
+															function() {
+																// Obtener el valor actual del input
+																var inputValue = this.value;
+
+																// Aplicar la validación para permitir solo letras del alfabeto español latino y espacios
+																var validatedValue = inputValue
+																		.replace(
+																				/[^A-Za-zñÑáéíóúÁÉÍÓÚ\s]/g,
+																				'');
+
+																// Capitalizar cada palabra
+																var capitalizedValue = validatedValue
+																		.replace(
+																				/\b\w/g,
+																				function(
+																						match) {
+																					return match
+																							.toUpperCase();
+																				});
+
+																// Actualizar el valor del input con el resultado capitalizado
+																this.value = capitalizedValue;
+
+																// Aplicar el estilo de borde verde de 3 píxeles si el valor es válido y tiene al menos un carácter
+																if (capitalizedValue === inputValue
+																		&& capitalizedValue.length > 0) {
+																	this.classList
+																			.add('border-success');
+																	this.style.borderWidth = '3px';
+																} else {
+																	this.classList
+																			.remove('border-success');
+																	this.style.borderWidth = '';
+																}
+															});
+
+											// Agregar un listener al evento focus del input
+											input
+													.addEventListener(
+															"focus",
+															function() {
+																// Mostrar el aviso al costado del input cuando se enfoca en él
+																lastNamesNotice.style.display = "block";
+																lastNamesNotice.textContent = "ALERTA: Solo puedes colocar letras";
+															});
+
+											// Agregar un listener al evento blur del input
+											input
+													.addEventListener(
+															"blur",
+															function() {
+																// Ocultar el aviso cuando se pierde el enfoque del input
+																lastNamesNotice.style.display = "none";
+																lastNamesNotice.textContent = "";
+															});
+										</script>
+
                     </div>
                     
                     <div class="form-group">
-                       <label>Email : </label>
-                       <input type="email" name="txtEmail" th:field="*{email}" class="form-control" placeholder="Email del estudiante: " id="txtEmail" required>
-                       <div id="emailNotice" class="input-notice"></div>
-                       
+<!--                        <label>Email : </label> -->
+<!--                        <input type="email" name="txtEmail" th:field="*{email}" class="form-control" placeholder="Email del estudiante: " id="txtEmail" required> -->
+
+                       <label for="txtEmail">EMAIL:</label> <input
+												placeholder="Escribe tu email" type="text"
+												class="form-control" name="txtEmail" id="txtEmail" required>
+											<div id="emailNotice" class="input-notice"></div>
                        
                        
                        

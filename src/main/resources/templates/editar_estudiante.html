@@ -6,24 +6,102 @@
 <!-- CSS only -->
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
 </head>
-<body>
+<body class="bg-danger">
 
 
-	<nav class="navbar navbar-expand-md bg-dark navbar-dark">
-		<a class="navbar-brand" href="#"> Control de estudiantes</a>
-		<!-- Navbar links -->
-		<div class="collapse navbar-collapse" id="collapsibleNavbar">
-			<ul class="navbar-nav">
-				<li class="nav-item"><a class="nav-link"
-					th:href="@{/estudiantes}">Estudiantes</a></li>
-			</ul>
+	<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+		<div class="container-fluid">
+			<span id="currentDateTime" class="nav-link text-white"> <span
+				id="currentTime" style="font-size: 34px;"></span> - <span
+				id="currentDate"></span>
+			</span>
+			<button class="navbar-toggler" type="button"
+				data-bs-toggle="collapse" data-bs-target="#navbarNav"
+				aria-controls="navbarNav" aria-expanded="false"
+				aria-label="Toggle navigation">
+				<span class="navbar-toggler-icon"></span>
+			</button>
+			<div class="collapse navbar-collapse justify-content-end"
+				id="navbarNav">
+				<ul class="navbar-nav">
+					<li class="nav-item"><a class="nav-link"
+						th:href="@{/estudiantes}">Estudiantes</a></li>
+					<li class="nav-item dropdown"><a
+						class="nav-link dropdown-toggle text-white" href="#"
+						id="logoutDropdown" role="button" data-bs-toggle="dropdown"
+						aria-expanded="false"> Cerrar sesión </a>
+						<ul class="dropdown-menu dropdown-menu-end"
+							aria-labelledby="logoutDropdown">
+							<li>
+								<div class="d-flex flex-column align-items-center p-3">
+									<img src="img\iconoUSUARIO.png" alt="Logo CASSIATEC"
+										class="logo-img" style="height: 6rem"><span
+										class="align-self-center">Auxiliar</span>
+									<button class="btn btn-danger mt-2" data-bs-toggle="modal"
+										data-bs-target="#confirmLogoutModal">Cerrar sesión</button>
+								</div>
+							</li>
+						</ul></li>
+				</ul>
+			</div>
 		</div>
 	</nav>
+	<script>
+		// Obtener el elemento para mostrar la hora y fecha y actualizarlo cada segundo
+		var currentDateTimeElement = document.getElementById("currentDateTime");
+
+		// Función para obtener la hora actual en formato HH:MM:SS
+		function getCurrentTime() {
+			var currentDate = new Date();
+			var hours = currentDate.getHours().toString().padStart(2, "0");
+			var minutes = currentDate.getMinutes().toString().padStart(2, "0");
+			var seconds = currentDate.getSeconds().toString().padStart(2, "0");
+			return hours + ":" + minutes + ":" + seconds;
+		}
+
+		// Función para obtener la fecha actual en formato DD/MM/YYYY
+		function getCurrentDate() {
+			var currentDate = new Date();
+			var days = [ 'Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves',
+					'Viernes', 'Sábado' ];
+			var day = days[currentDate.getDay()];
+			var date = currentDate.getDate().toString().padStart(2, "0");
+			var months = [ 'enero', 'febrero', 'marzo', 'abril', 'mayo',
+					'junio', 'julio', 'agosto', 'septiembre', 'octubre',
+					'noviembre', 'diciembre' ];
+			var month = months[currentDate.getMonth()];
+			var year = currentDate.getFullYear().toString();
+			return day + ' ' + date + ' de ' + month + ' de ' + year;
+		}
+
+		// Actualizar la hora y fecha cada segundo
+		function updateCurrentDateTime() {
+			var currentTime = getCurrentTime();
+			var currentDate = getCurrentDate();
+			currentDateTimeElement.textContent = currentTime + " - "
+					+ currentDate;
+		}
+
+		// Actualizar la hora y fecha inicial y luego cada segundo
+		updateCurrentDateTime();
+		setInterval(updateCurrentDateTime, 1000);
+
+		function updateCurrentDateTime() {
+			var currentTimeElement = document.getElementById("currentTime");
+			var currentDateElement = document.getElementById("currentDate");
+
+			var currentTime = getCurrentTime();
+			var currentDate = getCurrentDate();
+
+			currentTimeElement.textContent = currentTime;
+			currentDateElement.textContent = currentDate;
+		}
+	</script>
 
     <br>
     <div class="container">
        <div class="row">
-          <div class="col-lg-6 col-md-6 col-sm-6 container justify-content-center card">
+          <div class="col-lg-6 col-md-6 col-sm-6 container justify-content-center card bg-warning">
               <h1 class="text-center">Editar a un estudiante</h1>
               <div class="card-body">
                  <form th:action="@{/estudiantes/{id}(id=${estudiante.id})}" th:object="${estudiante}" method="POST">
